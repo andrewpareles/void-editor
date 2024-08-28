@@ -93,12 +93,13 @@
 		}
 	],
 	"git.ignoreLimitWarning": true,
-	"git.branchProtection": [
-		"main",
-		"distro",
-		"release/*"
-	],
-	"git.branchProtectionPrompt": "alwaysCommitToNewBranch",
+	// we removed this for glass:
+	// "git.branchProtection": [
+	// 	"main",
+	// 	"distro",
+	// 	"release/*"
+	// ],
+	// "git.branchProtectionPrompt": "alwaysCommitToNewBranch",
 	"git.branchRandomName.enable": true,
 	"git.pullBeforeCheckout": true,
 	"git.mergeEditor": true,
