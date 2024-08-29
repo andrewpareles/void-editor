@@ -5,10 +5,10 @@ import {
 	IViewDescriptor
 } from 'vs/workbench/common/views';
 
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-
 
 import * as nls from 'vs/nls';
+
+import { GlassView } from 'vs/workbench/contrib/glass/browser/glassView'
 
 import { Codicon } from 'vs/base/common/codicons';
 import { localize } from 'vs/nls';
@@ -45,7 +45,7 @@ const viewContainer = viewContainerRegistry.registerViewContainer({
 const viewDescriptor: IViewDescriptor = {
 	id: VIEW_ID,
 	containerIcon: glassViewIcon,
-	name: nls.localize2('search', "Search"),
+	name: nls.localize2('glass', "Glass"),
 	ctorDescriptor: new SyncDescriptor(GlassView),
 	canToggleVisibility: false,
 	canMoveView: true,
@@ -53,7 +53,7 @@ const viewDescriptor: IViewDescriptor = {
 		id: viewContainer.id,
 		mnemonicTitle: nls.localize({ key: 'miViewSearch', comment: ['&& denotes a mnemonic'] }, "&&Search"),
 		keybindings: {
-			primary: KeyMod.CtrlCmd | KeyMod.M, // TODO do we need to disable ctrl M?
+			primary: KeyMod.CtrlCmd | KeyCode.KeyM, // TODO do we need to disable ctrl M?
 		},
 		order: 1
 	}
@@ -62,20 +62,10 @@ const viewDescriptor: IViewDescriptor = {
 
 
 
-
-
-// Register view itself
-const viewsRegistry = Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry);
-viewsRegistry.registerViews([{
-	id: MyNewView.ID,
-	name: MyNewView.TITLE,
-	ctorDescriptor: new SyncDescriptor(MyNewView),
-	canToggleVisibility: true,
-	canMoveView: true,
-	when: ContextKeyExpr.equals('myContextKey', true),
-}], viewContainer);
-
-
-
-// Register search default location to sidebar
+// Register search default location to the container (sidebar)
 Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([viewDescriptor], viewContainer);
+
+
+// TODO can add a configuration for the user to choose config options - see search.contribution.ts
+
+
