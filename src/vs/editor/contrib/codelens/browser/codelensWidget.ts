@@ -83,8 +83,9 @@ class CodeLensContentWidget implements IContentWidget {
 		this._domNode.className = `codelens-decoration`;
 	}
 
+	// mutable function that updates domNode
 	renderTheCommands(lenses: Array<CodeLens | undefined | null>, animate: boolean): void {
-		this._commandOfId.clear();
+		this._commandOfId.clear(); // id -> Command (runs when click on thing)
 
 		const children: HTMLElement[] = [];
 		let hasSymbol = false;
