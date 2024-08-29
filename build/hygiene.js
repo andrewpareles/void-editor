@@ -264,53 +264,55 @@ function createGitIndexVinyls(paths) {
 	return pall(fns, { concurrency: 4 }).then((r) => r.filter((p) => !!p));
 }
 
-// this allows us to run hygiene as a git pre-commit hook
-if (require.main === module) {
-	const cp = require('child_process');
+// NO PRE COMMIT HOOKS!!!! for now... - glass team
 
-	process.on('unhandledRejection', (reason, p) => {
-		console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-		process.exit(1);
-	});
+// // this allows us to run hygiene as a git pre-commit hook
+// if (require.main === module) {
+// 	const cp = require('child_process');
 
-	if (process.argv.length > 2) {
-		hygiene(process.argv.slice(2)).on('error', (err) => {
-			console.error();
-			console.error(err);
-			process.exit(1);
-		});
-	} else {
-		cp.exec(
-			'git diff --cached --name-only',
-			{ maxBuffer: 2000 * 1024 },
-			(err, out) => {
-				if (err) {
-					console.error();
-					console.error(err);
-					process.exit(1);
-				}
+// 	process.on('unhandledRejection', (reason, p) => {
+// 		console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+// 		process.exit(1);
+// 	});
 
-				const some = out.split(/\r?\n/).filter((l) => !!l);
+// 	if (process.argv.length > 2) {
+// 		hygiene(process.argv.slice(2)).on('error', (err) => {
+// 			console.error();
+// 			console.error(err);
+// 			process.exit(1);
+// 		});
+// 	} else {
+// 		cp.exec(
+// 			'git diff --cached --name-only',
+// 			{ maxBuffer: 2000 * 1024 },
+// 			(err, out) => {
+// 				if (err) {
+// 					console.error();
+// 					console.error(err);
+// 					process.exit(1);
+// 				}
 
-				if (some.length > 0) {
-					console.log('Reading git index versions...');
+// 				const some = out.split(/\r?\n/).filter((l) => !!l);
 
-					createGitIndexVinyls(some)
-						.then(
-							(vinyls) =>
-								new Promise((c, e) =>
-									hygiene(es.readArray(vinyls).pipe(filter(all)))
-										.on('end', () => c())
-										.on('error', e)
-								)
-						)
-						.catch((err) => {
-							console.error();
-							console.error(err);
-							process.exit(1);
-						});
-				}
-			}
-		);
-	}
-}
+// 				if (some.length > 0) {
+// 					console.log('Reading git index versions...');
+
+// 					createGitIndexVinyls(some)
+// 						.then(
+// 							(vinyls) =>
+// 								new Promise((c, e) =>
+// 									hygiene(es.readArray(vinyls).pipe(filter(all)))
+// 										.on('end', () => c())
+// 										.on('error', e)
+// 								)
+// 						)
+// 						.catch((err) => {
+// 							console.error();
+// 							console.error(err);
+// 							process.exit(1);
+// 						});
+// 				}
+// 			}
+// 		);
+// 	}
+// }
