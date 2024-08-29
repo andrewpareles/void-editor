@@ -1,7 +1,6 @@
 
 
 
-import 'vs/css!./media/searchview';
 import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
 
 // import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -17,7 +16,7 @@ import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
 // import { IHoverService } from 'vs/platform/hover/browser/hover';
 
 
-export class GlassView extends ViewPane {
+export class GlassViewPane extends ViewPane {
 
 	// constructor(
 	// 	options: IViewPaneOptions,

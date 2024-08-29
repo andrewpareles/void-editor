@@ -8,7 +8,7 @@ import {
 
 import * as nls from 'vs/nls';
 
-import { GlassView } from 'vs/workbench/contrib/glass/browser/glassView'
+import { GlassViewPane } from 'vs/workbench/contrib/glass/browser/glassViewPane'
 
 import { Codicon } from 'vs/base/common/codicons';
 import { localize } from 'vs/nls';
@@ -46,7 +46,7 @@ const viewDescriptor: IViewDescriptor = {
 	id: VIEW_ID,
 	containerIcon: glassViewIcon,
 	name: nls.localize2('glass', "Glass"),
-	ctorDescriptor: new SyncDescriptor(GlassView),
+	ctorDescriptor: new SyncDescriptor(GlassViewPane),
 	canToggleVisibility: false,
 	canMoveView: true,
 	openCommandActionDescriptor: {
