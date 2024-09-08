@@ -79,7 +79,7 @@ class ExtensionsViewState extends Disposable implements IExtensionsViewState {
 	}
 }
 
-//asd
+
 export interface ExtensionsListViewOptions {
 	server?: IExtensionManagementServer;
 	flexibleHeight?: boolean;
