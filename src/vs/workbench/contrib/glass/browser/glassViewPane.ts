@@ -35,3 +35,5 @@ export class GlassViewPane extends ViewPane {
 	// }
 
 }
+
+// register a singleton service that
