@@ -69,17 +69,17 @@ type ChatMessage = {
 
 
 // const [stateRef, setState] = useInstantState(initVal)
-// setState instantly changes the value of stateRef instead of having to wait till the next render to have it (useful for javascript + logic)
-// re-renders happen like any other useState()
-export const useInstantState = <T,>(initVal: T) => {
+// setState instantly changes the value of stateRef instead of having to wait until the next render
+const useInstantState = <T,>(initVal: T) => {
 	const stateRef = useRef<T>(initVal)
 	const [_, setS] = useState<T>(initVal)
 	const setState = useCallback((newVal: T) => {
 		setS(newVal);
 		stateRef.current = newVal;
 	}, [])
-	return [stateRef as React.RefObject<T>, setState] as const // make s.current readonly; setState handles changes.
+	return [stateRef as React.RefObject<T>, setState] as const // make s.current readonly - setState handles all changes
 }
+
 
 
 const Sidebar = () => {
@@ -250,11 +250,11 @@ const Sidebar = () => {
 					{isLoading ?
 						<button
 							onClick={onStop}
-							className="bg-gray-500 text-white p-2 rounded-r-lg"
+							className="bg-gray-500 text-white p-2 rounded-r-lg max-h-10"
 							type='button'
 						>Stop</button>
 						: <button
-							className="bg-blue-500 text-white p-2 rounded-r-lg"
+							className="bg-blue-500 text-white p-2 rounded-r-lg max-h-10"
 							disabled={!instructions}
 							type='submit'
 						>Submit
