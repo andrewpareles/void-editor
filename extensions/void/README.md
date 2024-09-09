@@ -11,30 +11,34 @@
 
 
 ## Diffs
-"Diffs" are the inline green/red highlights you see to approve or reject a change.
+
+- "Diffs" are the inline green/red highlights you see to approve or reject a change.
 
 - Diffs are not responsive to edits right now. To make them responsive, we need to update all Diffs' ranges every time there's a change.
 
 - Right now Diffs are only shown in green as a simple text decoration. We'd like to have them work better by stealing code from VS Code's native diffEditor ("inline" mode).
 
-- **Events:** When in doubt, reject all the current Diffs (when the user submits a new chat message, clicks Apply, etc, discard all).
-
+- **Events:** On many types of event, we should reject all the current Diffs (user submits a new chat message, clicks Apply, etc).
 
 
 
 ## Ctrl+L (chat)
 
-- We should let the user accept / reject all Diffs in an entire file
-- We should automatically select the file the user is currently in
-- The user should be able to make multiple selections of code/files at once
+- We should let the user accept / reject all Diffs in an entire file.
+-
+- We should automatically select the file the user is currently in.
+-
+- The user should be able to make multiple selections of code/files at once.
 
 
 
 ## Ctrl+K (inline edits)
 
-- Create a new input box that takes in the user's description
-- Make it appear above each
-- The input box should appear directly above the code selection - this requires using a Zone widget
+- Create a new input box that takes in the user's description.
+-
+- Make it appear above each.
+-
+- The input box should appear directly above the code selection - this requires using a Zone widget.
 
 
 
@@ -54,7 +58,7 @@
 
 # Run
 
-To run this extension alone, open it up in an editor on its own, run `npm run build`, and hit F5.
+To run this extension alone, open the repo in a new workspace, `npm run build`, and hit `F5`.
 
 
 ## Note on using React
