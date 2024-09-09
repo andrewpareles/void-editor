@@ -1,6 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
-import { getVSCodeAPI } from '../sidebar/getVscodeApi';
 
 // import ollama from 'ollama'
 
