@@ -5,7 +5,7 @@ export type SuggestedEdit = {
     startLine: number;
     endLine: number;
 
-    // start/end of original file 
+    // start/end of original file
     originalStartLine: number,
     originalEndLine: number,
 
@@ -15,7 +15,7 @@ export type SuggestedEdit = {
 }
 
 
-// stored for later use 
+// stored for later use
 type DiffType = {
     diffid: number, // unique id
     range: vscode.Range, // current range
@@ -23,7 +23,7 @@ type DiffType = {
     lenses: vscode.CodeLens[],
 }
 
-// TODO in theory this should be disposed 
+// TODO in theory this should be disposed
 const greenDecoration = vscode.window.createTextEditorDecorationType({
     backgroundColor: 'rgba(0 255 51 / 0.2)',
     isWholeLine: true, // after: { contentText: '       [original]', color: 'rgba(0 255 60 / 0.5)' }  // hoverMessage: originalText // this applies to hovering over after:...
@@ -36,12 +36,36 @@ export class ApprovalCodeLensProvider implements vscode.CodeLensProvider {
     private _diffidPool = 0
 
     private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>(); // signals a UI refresh on .fire() events
-    public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event; // used internally by vscode
+
+    private _weAreEditing: boolean = false
+
+    // used internally by vscode
+    public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
+
 
     // used internally by vscode
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
         const docUriStr = document.uri.toString()
         return this._computedLensesOfDocument[docUriStr]
+    }
+
+    constructor() {
+        // this acts as a useEffect. Every time text changes, clear the diffs in this editor
+        // TODO ideally we wouldn't clear the diffs, we would just re-draw them and update their ranges
+        vscode.workspace.onDidChangeTextDocument((e) => {
+            // TODO we need to move all the codelenses and ranges below this one up/down depending on the number of newlines added - this is a known bug
+            const editor = vscode.window.activeTextEditor
+            if (!editor)
+                return
+            if (this._weAreEditing)
+                return
+            const docUri = editor.document.uri
+            const docUriStr = docUri.toString()
+            this._diffsOfDocument[docUriStr].splice(0) // clear diffs
+            editor.setDecorations(greenDecoration, []) // clear decorations
+            this._computedLensesOfDocument[docUriStr] = this._diffsOfDocument[docUriStr].flatMap(diff => diff.lenses) // recompute
+            this._onDidChangeCodeLenses.fire() // refresh
+        })
     }
 
     // used by us only
@@ -84,7 +108,10 @@ export class ApprovalCodeLensProvider implements vscode.CodeLensProvider {
             const originalRange = new vscode.Range(suggestedEdit.originalStartLine, 0, suggestedEdit.originalEndLine, Number.MAX_SAFE_INTEGER)
             workspaceEdit.replace(docUri, originalRange, suggestedEdit.newContent);
         }
+        this._weAreEditing = true
         await vscode.workspace.applyEdit(workspaceEdit)
+        await vscode.workspace.save(docUri)
+        this._weAreEditing = false
 
         // 2. add the Yes/No codelenses
         for (let diff of diffs) {
@@ -107,7 +134,6 @@ export class ApprovalCodeLensProvider implements vscode.CodeLensProvider {
 
         // refresh
         this._onDidChangeCodeLenses.fire()
-
 
         console.log('diffs after added:', this._diffsOfDocument[docUriStr])
     }
@@ -139,7 +165,6 @@ export class ApprovalCodeLensProvider implements vscode.CodeLensProvider {
 
         // refresh
         this._onDidChangeCodeLenses.fire()
-
     }
 
 
@@ -167,16 +192,18 @@ export class ApprovalCodeLensProvider implements vscode.CodeLensProvider {
         // clear the decoration in this diffs range
         editor.setDecorations(greenDecoration, this._diffsOfDocument[docUriStr].map(diff => diff.range))
 
-        // REVERT THE CHANGE (THIS IS DIFFERENT FROM APPROVE DIFF)
+        // REVERT THE CHANGE (this is the only part that's different from approveDiff)
         let workspaceEdit = new vscode.WorkspaceEdit();
         workspaceEdit.replace(docUri, range, originalCode);
+        this._weAreEditing = true
         await vscode.workspace.applyEdit(workspaceEdit)
+        await vscode.workspace.save(docUri)
+        this._weAreEditing = false
 
         // recompute _computedLensesOfDocument (can optimize this later)
         this._computedLensesOfDocument[docUriStr] = this._diffsOfDocument[docUriStr].flatMap(diff => diff.lenses)
 
         // refresh
         this._onDidChangeCodeLenses.fire()
-
     }
 }

@@ -34,6 +34,9 @@ ${instructions}`;
 
 const ChatBubble = ({ role, children }: { role: 'user' | 'assistant', children: string }) => {
 
+	if (!children)
+		return null
+
 	let chatbubbleContents: React.ReactNode
 
 	// render user messages as text
@@ -208,22 +211,26 @@ const Sidebar = () => {
 				{/* selection */}
 				<div className="text-left">
 					{/* selected files */}
-					<div>
+					<div className='text-xs'>
+						Include files:
 						{files.map((filename, i) =>
 							<div key={i} className='flex'>
 								{/* X button on a file */}
 								<button type='button' onClick={() => {
 									let file_index = files.indexOf(filename)
 									setFiles([...files.slice(0, file_index), ...files.slice(file_index + 1, Infinity)])
-								}}>X</button>
-								<div className='text-xs'>{getBasename(filename.fsPath)}</div>
+								}}>
+									-{' '}
+									<span className='text-gray-500'>{getBasename(filename.fsPath)}</span>
+								</button>
 							</div>
 						)}
 					</div>
 					{/* selected code */}
-					<div className="inline-block p-2 rounded-lg bg-gray-200 text-black">
-						{selection?.selectionStr}
-					</div>
+					{!selection?.selectionStr ? null
+						: <div className="inline-block p-2 rounded-lg bg-gray-200 text-black">
+							{selection.selectionStr}
+						</div>}
 				</div>
 				<form
 					ref={formRef}
@@ -240,7 +247,7 @@ const Sidebar = () => {
 					<textarea
 						onChange={(e) => { setInstructions(e.target.value) }}
 						className="appearance-none border-none rounded-l-lg w-full py-3 px-5 text-black bg-white leading-tight focus:outline-none focus:shadow-outline resize-none overflow-y-auto transition-height duration-200 max-h-[50vh]"
-						placeholder="Type your message..."
+						placeholder="Ctrl+L to select"
 						rows={1}
 						onInput={e => { e.currentTarget.style.height = 'auto'; e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px'; }} // Adjust height dynamically
 					/>

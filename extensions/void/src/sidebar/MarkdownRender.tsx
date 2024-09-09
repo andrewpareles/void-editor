@@ -4,8 +4,6 @@ import { awaitVSCodeResponse, getVSCodeAPI } from './getVscodeApi';
 
 
 const Code = ({ text }: { text: string }) => {
-    const [submitting, setSubmitting] = useState(false)
-
     return <div>
         <div className='text-sm'>
             <button className='text-sm' onClick={async () => {
