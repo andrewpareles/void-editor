@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as dom from 'vs/base/browser/dom';
-import { renderLabelWithIcons } from 'vs/base/browser/ui/iconLabel/iconLabels';
-import { Constants } from 'vs/base/common/uint';
-import 'vs/css!./codelensWidget';
-import { ContentWidgetPositionPreference, IActiveCodeEditor, IContentWidget, IContentWidgetPosition, IViewZone, IViewZoneChangeAccessor } from 'vs/editor/browser/editorBrowser';
-import { Range } from 'vs/editor/common/core/range';
-import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, ITextModel } from 'vs/editor/common/model';
-import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
-import { CodeLens, Command } from 'vs/editor/common/languages';
-import { CodeLensItem } from 'vs/editor/contrib/codelens/browser/codelens';
+import * as dom from '../../../../base/browser/dom.js';
+import { renderLabelWithIcons } from '../../../../base/browser/ui/iconLabel/iconLabels.js';
+import { Constants } from '../../../../base/common/uint.js';
+import './codelensWidget.css';
+import { ContentWidgetPositionPreference, IActiveCodeEditor, IContentWidget, IContentWidgetPosition, IViewZone, IViewZoneChangeAccessor } from '../../../browser/editorBrowser.js';
+import { Range } from '../../../common/core/range.js';
+import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, ITextModel } from '../../../common/model.js';
+import { ModelDecorationOptions } from '../../../common/model/textModel.js';
+import { CodeLens, Command } from '../../../common/languages.js';
+import { CodeLensItem } from './codelens.js';
 
 class CodeLensViewZone implements IViewZone {
 
@@ -65,7 +65,7 @@ class CodeLensContentWidget implements IContentWidget {
 	private readonly _id: string;
 	private readonly _domNode: HTMLElement;
 	private readonly _editor: IActiveCodeEditor;
-	private readonly _commandOfId = new Map<string, Command>();
+	private readonly _commands = new Map<string, Command>();
 
 	private _widgetPosition?: IContentWidgetPosition;
 	private _isEmpty: boolean = true;
@@ -79,13 +79,12 @@ class CodeLensContentWidget implements IContentWidget {
 
 		this.updatePosition(line);
 
-		this._domNode = document.createElement('div');
+		this._domNode = document.createElement('span');
 		this._domNode.className = `codelens-decoration`;
 	}
 
-	// mutable function that updates domNode
-	renderTheCommands(lenses: Array<CodeLens | undefined | null>, animate: boolean): void {
-		this._commandOfId.clear(); // id -> Command (runs when click on thing)
+	withCommands(lenses: Array<CodeLens | undefined | null>, animate: boolean): void {
+		this._commands.clear();
 
 		const children: HTMLElement[] = [];
 		let hasSymbol = false;
@@ -96,27 +95,14 @@ class CodeLensContentWidget implements IContentWidget {
 			}
 			hasSymbol = true;
 			if (lens.command) {
-				const stringsAndIcons = renderLabelWithIcons(lens.command.title.trim());
-				const id = lens.command.id ? `c${(CodeLensContentWidget._idPool++)}` : undefined;
-
-				if (id)
-					this._commandOfId.set(id, lens.command)
-
-				if (id)
-					children.push(dom.$('a', { id, title: lens.command.tooltip, role: 'button' }, ...stringsAndIcons))
-				else
-					children.push(dom.$('span', { title: lens.command.tooltip }, ...stringsAndIcons))
-
-				const container = document.createElement('div');
-
-				const input = document.createElement('input');
-				const submit = dom.$('button', { type: 'button' }, 'Submit');
-				container.appendChild(input);
-				container.appendChild(submit);
-
-				children.push(container)
-
-				// add a delimiter
+				const title = renderLabelWithIcons(lens.command.title.trim());
+				if (lens.command.id) {
+					const id = `c${(CodeLensContentWidget._idPool++)}`;
+					children.push(dom.$('a', { id, title: lens.command.tooltip, role: 'button' }, ...title));
+					this._commands.set(id, lens.command);
+				} else {
+					children.push(dom.$('span', { title: lens.command.tooltip }, ...title));
+				}
 				if (i + 1 < lenses.length) {
 					children.push(dom.$('span', undefined, '\u00a0|\u00a0'));
 				}
@@ -137,9 +123,9 @@ class CodeLensContentWidget implements IContentWidget {
 		}
 	}
 
-	commandOfHTMLa(link: HTMLLinkElement): Command | undefined {
+	getCommand(link: HTMLLinkElement): Command | undefined {
 		return link.parentElement === this._domNode
-			? this._commandOfId.get(link.id)
+			? this._commands.get(link.id)
 			: undefined;
 	}
 
@@ -168,7 +154,6 @@ export interface IDecorationIdCallback {
 	(decorationId: string): void;
 }
 
-// add/remove decoration (as deltas) and commit them
 export class CodeLensHelper {
 
 	private readonly _removeDecorations: string[];
@@ -214,15 +199,6 @@ export class CodeLensWidget {
 	private _data: CodeLensItem[];
 	private _isDisposed: boolean = false;
 
-	private _createOrLayoutWidget(): void {
-		if (!this._contentWidget) {
-			this._contentWidget = new CodeLensContentWidget(this._editor, this._viewZone.afterLineNumber + 1);
-			this._editor.addContentWidget(this._contentWidget);
-		} else {
-			this._editor.layoutContentWidget(this._contentWidget);
-		}
-	}
-
 	constructor(
 		data: CodeLensItem[],
 		editor: IActiveCodeEditor,
@@ -262,12 +238,20 @@ export class CodeLensWidget {
 		this._viewZone = new CodeLensViewZone(range!.startLineNumber - 1, heightInPx, updateCallback);
 		this._viewZoneId = viewZoneChangeAccessor.addZone(this._viewZone);
 
-		if (lenses.length !== 0) {
-			this._createOrLayoutWidget();
-			this._contentWidget!.renderTheCommands(lenses, false);
+		if (lenses.length > 0) {
+			this._createContentWidgetIfNecessary();
+			this._contentWidget!.withCommands(lenses, false);
 		}
 	}
 
+	private _createContentWidgetIfNecessary(): void {
+		if (!this._contentWidget) {
+			this._contentWidget = new CodeLensContentWidget(this._editor, this._viewZone.afterLineNumber + 1);
+			this._editor.addContentWidget(this._contentWidget);
+		} else {
+			this._editor.layoutContentWidget(this._contentWidget);
+		}
+	}
 
 	dispose(helper: CodeLensHelper, viewZoneChangeAccessor?: IViewZoneChangeAccessor): void {
 		this._decorationIds.forEach(helper.removeDecoration, helper);
@@ -284,7 +268,7 @@ export class CodeLensWidget {
 		return this._isDisposed;
 	}
 
-	hasValidRange(): boolean {
+	isValid(): boolean {
 		return this._decorationIds.some((id, i) => {
 			const range = this._editor.getModel().getDecorationRange(id);
 			const symbol = this._data[i].symbol;
@@ -312,7 +296,7 @@ export class CodeLensWidget {
 		}
 	}
 
-	visibleCodeLenses(model: ITextModel): CodeLensItem[] | null {
+	computeIfNecessary(model: ITextModel): CodeLensItem[] | null {
 		if (!this._viewZone.isVisible()) {
 			return null;
 		}
@@ -327,13 +311,13 @@ export class CodeLensWidget {
 		return this._data;
 	}
 
-	updateCommands(lenses: Array<CodeLens | undefined | null>): void {
+	updateCommands(symbols: Array<CodeLens | undefined | null>): void {
 
-		this._createOrLayoutWidget();
-		this._contentWidget!.renderTheCommands(lenses, true);
+		this._createContentWidgetIfNecessary();
+		this._contentWidget!.withCommands(symbols, true);
 
 		for (let i = 0; i < this._data.length; i++) {
-			const resolved = lenses[i];
+			const resolved = symbols[i];
 			if (resolved) {
 				const { symbol } = this._data[i];
 				symbol.command = resolved.command || symbol.command;
@@ -341,8 +325,8 @@ export class CodeLensWidget {
 		}
 	}
 
-	commandOfHTMLa(link: HTMLLinkElement): Command | undefined {
-		return this._contentWidget?.commandOfHTMLa(link);
+	getCommand(link: HTMLLinkElement): Command | undefined {
+		return this._contentWidget?.getCommand(link);
 	}
 
 	getLineNumber(): number {
@@ -354,7 +338,7 @@ export class CodeLensWidget {
 	}
 
 	update(viewZoneChangeAccessor: IViewZoneChangeAccessor): void {
-		if (this.hasValidRange()) {
+		if (this.isValid()) {
 			const range = this._editor.getModel().getDecorationRange(this._decorationIds[0]);
 			if (range) {
 				this._viewZone.afterLineNumber = range.startLineNumber - 1;

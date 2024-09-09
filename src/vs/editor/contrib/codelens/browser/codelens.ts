@@ -3,12 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationToken } from 'vs/base/common/cancellation';
-import { onUnexpectedExternalError } from 'vs/base/common/errors';
-import { DisposableStore } from 'vs/base/common/lifecycle';
-import { ITextModel } from 'vs/editor/common/model';
-import { CodeLens, CodeLensList, CodeLensProvider } from 'vs/editor/common/languages';
-import { LanguageFeatureRegistry } from 'vs/editor/common/languageFeatureRegistry';
+import { CancellationToken } from '../../../../base/common/cancellation.js';
+import { illegalArgument, onUnexpectedExternalError } from '../../../../base/common/errors.js';
+import { DisposableStore } from '../../../../base/common/lifecycle.js';
+import { assertType } from '../../../../base/common/types.js';
+import { URI } from '../../../../base/common/uri.js';
+import { ITextModel } from '../../../common/model.js';
+import { CodeLens, CodeLensList, CodeLensProvider } from '../../../common/languages.js';
+import { IModelService } from '../../../common/services/model.js';
+import { CommandsRegistry } from '../../../../platform/commands/common/commands.js';
+import { LanguageFeatureRegistry } from '../../../common/languageFeatureRegistry.js';
+import { ILanguageFeaturesService } from '../../../common/services/languageFeatures.js';
 
 export interface CodeLensItem {
 	symbol: CodeLens;
@@ -79,3 +84,41 @@ export async function getCodeLensModel(registry: LanguageFeatureRegistry<CodeLen
 	});
 	return result;
 }
+
+CommandsRegistry.registerCommand('_executeCodeLensProvider', function (accessor, ...args: [URI, number | undefined | null]) {
+	let [uri, itemResolveCount] = args;
+	assertType(URI.isUri(uri));
+	assertType(typeof itemResolveCount === 'number' || !itemResolveCount);
+
+	const { codeLensProvider } = accessor.get(ILanguageFeaturesService);
+
+	const model = accessor.get(IModelService).getModel(uri);
+	if (!model) {
+		throw illegalArgument();
+	}
+
+	const result: CodeLens[] = [];
+	const disposables = new DisposableStore();
+	return getCodeLensModel(codeLensProvider, model, CancellationToken.None).then(value => {
+
+		disposables.add(value);
+		const resolve: Promise<any>[] = [];
+
+		for (const item of value.lenses) {
+			if (itemResolveCount === undefined || itemResolveCount === null || Boolean(item.symbol.command)) {
+				result.push(item.symbol);
+			} else if (itemResolveCount-- > 0 && item.provider.resolveCodeLens) {
+				resolve.push(Promise.resolve(item.provider.resolveCodeLens(model, item.symbol, CancellationToken.None)).then(symbol => result.push(symbol || item.symbol)));
+			}
+		}
+
+		return Promise.all(resolve);
+
+	}).then(() => {
+		return result;
+	}).finally(() => {
+		// make sure to return results, then (on next tick)
+		// dispose the results
+		setTimeout(() => disposables.dispose(), 100);
+	});
+});
