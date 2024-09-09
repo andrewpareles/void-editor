@@ -211,7 +211,7 @@ const Sidebar = () => {
 				{/* selection */}
 				<div className="text-left">
 					{/* selected files */}
-					<div className='text-xs'>
+					{files.length !== 0 && <div className='text-xs my-2'>
 						Include files:
 						{files.map((filename, i) =>
 							<div key={i} className='flex'>
@@ -220,12 +220,11 @@ const Sidebar = () => {
 									let file_index = files.indexOf(filename)
 									setFiles([...files.slice(0, file_index), ...files.slice(file_index + 1, Infinity)])
 								}}>
-									-{' '}
-									<span className='text-gray-500'>{getBasename(filename.fsPath)}</span>
+									-{' '}<span className='text-gray-500'>{getBasename(filename.fsPath)}</span>
 								</button>
 							</div>
 						)}
-					</div>
+					</div>}
 					{/* selected code */}
 					{!selection?.selectionStr ? null
 						: <div className="inline-block p-2 rounded-lg bg-gray-200 text-black">
