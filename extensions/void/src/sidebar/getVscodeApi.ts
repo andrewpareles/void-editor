@@ -2,7 +2,6 @@ import { Command, WebviewMessage } from "../shared_types";
 
 
 
-// all the resolve functions that are waiting
 // message -> res[]
 const awaiting: { [c in Command]: ((res: any) => void)[] } = {
     "ctrl+l": [],
@@ -21,9 +20,7 @@ export const awaitVSCodeResponse = <C extends Command>(c: C) => {
     return result
 }
 
-// resolve responses - must mount in the event listener
 export const resolveAwaitingVSCodeResponse = (m: WebviewMessage) => {
-
     // resolve all promises for this message
     for (let res of awaiting[m.type]) {
         res(m)
@@ -32,16 +29,15 @@ export const resolveAwaitingVSCodeResponse = (m: WebviewMessage) => {
 }
 
 
-// VS Code exposes the function acquireVsCodeApi() to us, here is the type
+// VS Code exposes the function acquireVsCodeApi() to us, it should only get called once
+let vsCodeApi: ReturnType<AcquireVsCodeApiType> | undefined;
+
 type AcquireVsCodeApiType = () => {
     postMessage(message: WebviewMessage): void;
     // setState(state: any): void; // getState and setState are made obsolete by us using { retainContextWhenHidden: true }
     // getState(): any;
 };
 
-let vsCodeApi: ReturnType<AcquireVsCodeApiType> | undefined;
-
-// We're only supposed to call acquireVsCodeApi() once. This function memoizes it so it only gets called once.
 export function getVSCodeAPI(): ReturnType<AcquireVsCodeApiType> {
     if (vsCodeApi)
         return vsCodeApi;
