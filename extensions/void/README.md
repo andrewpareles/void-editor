@@ -25,9 +25,9 @@
 ## Ctrl+L (chat)
 
 - We should let the user accept / reject all Diffs in an entire file.
--
+
 - We should automatically select the file the user is currently in.
--
+
 - The user should be able to make multiple selections of code/files at once.
 
 
@@ -35,9 +35,9 @@
 ## Ctrl+K (inline edits)
 
 - Create a new input box that takes in the user's description.
--
+
 - Make it appear above each.
--
+
 - The input box should appear directly above the code selection - this requires using a Zone widget.
 
 
@@ -53,7 +53,6 @@
 ## Design principles
 
 - Least amount of eye movement necessary; if user presses submit, show them the message where they submitted
-
 
 
 # Run
