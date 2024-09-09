@@ -55,7 +55,7 @@ export class SidebarWebviewProvider implements vscode.WebviewViewProvider {
         const nonce = getNonce(); // only scripts with the nonce are allowed to run, this is a recommended security measure
 
 
-        const allowed_urls = ['https://api.anthropic.com', 'https://api.greptile.com/v2/query']
+        const allowed_urls = ['https://api.anthropic.com', 'https://api.openai.com', 'https://api.greptile.com']
         webview.html = `<!DOCTYPE html>
       <html lang="en">
       <head>

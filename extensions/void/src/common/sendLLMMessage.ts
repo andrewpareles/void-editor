@@ -135,7 +135,7 @@ const sendOpenAIMsg: SendLLMMessageFnTypeInternal = ({ messages, onText, onFinal
                 console.error('Error in OpenAI stream:', error);
                 onFinalMessage(fullText);
             }
-            // when we get the final message on this stream 
+            // when we get the final message on this stream
             onFinalMessage(fullText)
         })
     return { abort };

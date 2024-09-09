@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import Sidebar from './Sidebar'
 
+// mount the sidebar on the id="root" element
 if (typeof document === 'undefined') {
     console.log('index.tsx error: document was undefined')
 }
