@@ -65,9 +65,16 @@ More ⭐'s = more important.
 
 ⭐⭐ Integrate with Ollama. We have an Ollama integration coded up in the extension, but it breaks. This is because Ollama has Node.js dependencies like 'path' and 'os' which cannot run in extensions (extensions have to be able to run in the browser). To fix this, we need to migrate void's extension so that it runs natively into the VS Code editor so that we can access Node.js.
 
+⭐ When user presses ctrl+l it should reset from last time.
 
 ⭐ Let the user accept / reject all Diffs in an entire file.
-⭐ Allow the user to make multiple selections of code/files at once.
+
+⭐ Allow the user to make multiple selections of code or files at once.
+
+⭐ Allow user to X out of their current selection.
+
+
+
 
 ## Links
 
