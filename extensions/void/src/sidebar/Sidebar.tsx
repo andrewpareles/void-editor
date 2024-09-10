@@ -263,7 +263,7 @@ const Sidebar = () => {
 				</div>
 				<form
 					ref={formRef}
-					className="flex"
+					className="flex flex-row items-center bg-[#1e1e1e] rounded-md p-2 border-2 border-gray-300"
 					onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) onSubmit(e) }}
 
 					onSubmit={(e) => {
@@ -275,13 +275,12 @@ const Sidebar = () => {
 
 					<textarea
 						onChange={(e) => { setInstructions(e.target.value) }}
-						className="appearance-none border-none rounded-l-lg w-full py-3 px-5 text-black bg-white leading-tight focus:outline-none focus:shadow-outline resize-none overflow-y-auto transition-height duration-200 max-h-[50vh]"
-						placeholder="Enter a message (Ctrl+L to select)"
+						className="w-full p-2 leading-tight resize-none overflow-y-auto max-h-[50vh] bg-[#1e1e1e] text-white rounded-md"
+						style={{ outline: '0px solid' }}
+						placeholder="Ctrl+L to select"
 						rows={1}
 						onInput={e => { e.currentTarget.style.height = 'auto'; e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px'; }} // Adjust height dynamically
 					/>
-
-
 					{/* submit button */}
 					{isLoading ?
 						<button
@@ -290,10 +289,14 @@ const Sidebar = () => {
 							type='button'
 						>Stop</button>
 						: <button
-							className="bg-blue-500 text-white p-2 rounded-r-lg max-h-10"
+							className="cursor-pointer hover:bg-slate-600 bg-slate-500 text-white font-bold size-8 flex justify-center items-center rounded-full p-2 max-h-10"
 							disabled={!instructions}
 							type='submit'
-						>Submit
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+								<line x1="12" y1="19" x2="12" y2="5"></line>
+								<polyline points="5 12 12 5 19 12"></polyline>
+							</svg>
 						</button>
 					}
 				</form>
