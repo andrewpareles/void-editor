@@ -263,7 +263,7 @@ const Sidebar = () => {
 				</div>
 				<form
 					ref={formRef}
-					className="flex flex-row items-center bg-[#1e1e1e] rounded-md p-2 border-2 border-gray-300"
+					className="flex flex-row items-center bg-[#1e1e1e] rounded-md p-2 border-1 border-gray-500"
 					onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) onSubmit(e) }}
 
 					onSubmit={(e) => {
