@@ -275,11 +275,11 @@ const Sidebar = () => {
 
 					<textarea
 						onChange={(e) => { setInstructions(e.target.value) }}
-						className="w-full p-2 leading-tight resize-none scroll-m-1 max-h-[50vh] overflow-y-auto text-white rounded-md bg-[rgb(20,20,20)]"
+						className="w-full p-2 leading-tight resize-none max-h-[50vh] overflow-hidden text-white rounded-md bg-[rgb(20,20,20)]"
 						style={{ outline: '0px solid' }}
 						placeholder="Ctrl+L to select"
 						rows={1}
-						onInput={e => { e.currentTarget.style.height = 'auto'; e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px'; }} // Adjust height dynamically
+						onInput={e => { e.currentTarget.style.height = 'auto'; e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px' }} // Adjust height dynamically
 					/>
 					{/* submit button */}
 					{isLoading ?
