@@ -3,13 +3,14 @@ import { MarkedToken, Token, TokensList } from 'marked';
 import { awaitVSCodeResponse, getVSCodeAPI } from './getVscodeApi';
 
 
-const BlockCode = ({ text }: { text: string }) => {
-    return <div>
-        <div className='text-sm text-right'>
+// code block with Apply button at top
+export const BlockCode = ({ text, disableApplyButton = false }: { text: string, disableApplyButton?: boolean }) => {
+    return <div className='py-1'>
+        {disableApplyButton ? null : <div className='text-sm'>
             <button className='px-3 py-1 text-sm text-white bg-[#1e1e1e] rounded-t-sm hover:brigtness-105'
                 onClick={async () => { getVSCodeAPI().postMessage({ type: 'applyCode', code: text }) }}>Apply</button>
-        </div>
-        <div className='overflow-x-auto bg-black rounded-sm rounded-tr-none text-gray-50'>
+        </div>}
+        <div className={`overflow-x-auto bg-black rounded-sm text-gray-50 ${disableApplyButton ? '' : 'rounded-tl-none'}`}>
             <pre className='p-3'>
                 {text}
             </pre>
@@ -125,7 +126,7 @@ const Render = ({ token }: { token: Token }) => {
         return <em>{t.text}</em>;
     }
 
-	// inline code
+    // inline code
     if (t.type === "codespan") {
         return <code className='text-black bg-gray-300 px-1 rounded-sm font-mono'>{t.text}</code>;
     }

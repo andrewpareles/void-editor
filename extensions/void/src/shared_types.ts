@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import { ApiConfig } from './common/sendLLMMessage';
 
+// a selection is a frozen snapshot
 type Selection = { selectionStr: string, selectionRange: vscode.Range, filePath: vscode.Uri }
 
 type File = { filepath: vscode.Uri, content: string }

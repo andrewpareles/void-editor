@@ -5,7 +5,7 @@ Welcome! This file is where we track our TODOs. Feel free to add to the list or 
 
 ## Core
 
-- Migrate the void extension to be a native VS Code extension. There's initial work here at `glass.contribution.ts`.
+- Migrate the void extension to live natively in VS Code. There's initial work here at `glass.contribution.ts`.
 
 - Allow access to the VS Code extension marketplace.
 

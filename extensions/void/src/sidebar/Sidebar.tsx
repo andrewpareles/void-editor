@@ -4,7 +4,7 @@ import { Command, File, Selection, WebviewMessage } from "../shared_types"
 import { awaitVSCodeResponse, getVSCodeAPI, resolveAwaitingVSCodeResponse } from "./getVscodeApi"
 
 import { marked } from 'marked';
-import MarkdownRender from "./MarkdownRender";
+import MarkdownRender, { BlockCode } from "./MarkdownRender";
 
 import * as vscode from 'vscode'
 
@@ -28,27 +28,69 @@ I am currently selecting this code:
 `}
 
 Please edit the code following these instructions:
-${instructions}`;
+${instructions}
+
+If you make a change, rewrite the entire file.
+`; // TODO don't rewrite the whole file on prompt, instead rewrite it when click Apply
 }
 
 
-const ChatBubble = ({ role, children }: { role: 'user' | 'assistant', children: string }) => {
+const FilesSelector = ({ files, setFiles }: { files: vscode.Uri[], setFiles: (files: vscode.Uri[]) => void }) => {
+	return files.length !== 0 && <div className='text-xs my-2'>
+		Include files:
+		{files.map((filename, i) =>
+			<div key={i} className='flex'>
+				{/* X button on a file */}
+				<button type='button' onClick={() => {
+					let file_index = files.indexOf(filename)
+					setFiles([...files.slice(0, file_index), ...files.slice(file_index + 1, Infinity)])
+				}}>
+					-{' '}<span className='text-gray-500'>{getBasename(filename.fsPath)}</span>
+				</button>
+			</div>
+		)}
+	</div>
+}
+
+const IncludedFiles = ({ files }: { files: vscode.Uri[] }) => {
+	return files.length !== 0 && <div className='text-xs my-2'>
+		{files.map((filename, i) =>
+			<div key={i} className='flex'>
+				<button type='button'
+					className='pointer-events-none'
+					onClick={() => {
+						// TODO redirect to the document filename.fsPath, when add this remove pointer-events-none
+					}}>
+					-{' '}<span className='text-gray-100'>{getBasename(filename.fsPath)}</span>
+				</button>
+			</div>
+		)}
+	</div>
+}
+
+
+const ChatBubble = ({ chatMessage }: { chatMessage: ChatMessage }) => {
+
+	const role = chatMessage.role
+	const children = chatMessage.displayContent
 
 	if (!children)
 		return null
 
 	let chatbubbleContents: React.ReactNode
 
-	// render user messages as text
 	if (role === 'user') {
-		chatbubbleContents = children
+		chatbubbleContents = <>
+			<IncludedFiles files={chatMessage.files} />
+			{chatMessage.selection?.selectionStr && <BlockCode text={chatMessage.selection.selectionStr} disableApplyButton={true} />}
+			{children}
+		</>
 	}
-
-	// render assistant messages as markdown
 	else if (role === 'assistant') {
 		const tokens = marked.lexer(children); // https://marked.js.org/using_pro#renderer
 		chatbubbleContents = <MarkdownRender tokens={tokens} /> // sectionsHTML
 	}
+
 
 	return <div className={`mb-4 ${role === 'user' ? 'text-right' : 'text-left'}`}>
 		<div className={`inline-block p-2 rounded-lg ${role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'} max-w-full`}>
@@ -65,9 +107,15 @@ const getBasename = (pathStr: string) => {
 }
 
 type ChatMessage = {
-	role: 'user' | 'assistant',
+	role: 'user'
 	content: string, // content sent to the llm
 	displayContent: string, // content displayed to user
+	selection: Selection | null, // the user's selection
+	files: vscode.Uri[], // the files sent in the message
+} | {
+	role: 'assistant',
+	content: string, // content received from LLM
+	displayContent: string // content displayed to user (this is the same as content for now)
 }
 
 
@@ -93,7 +141,7 @@ const Sidebar = () => {
 	const [instructions, setInstructions] = useState('') // the user's instructions
 
 	// state of chat
-	const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
+	const [chatMessageHistory, setChatHistory] = useState<ChatMessage[]>([])
 	const [messageStream, setMessageStream] = useState('')
 	const [isLoading, setIsLoading] = useState(false)
 
@@ -155,18 +203,18 @@ const Sidebar = () => {
 
 		// add message to chat history
 		const content = userInstructionsStr(instructions, relevantFiles.files, selection)
-		const newHistoryElt: ChatMessage = { role: 'user', content, displayContent: instructions, }
-		setChatHistory(chatHistory => [...chatHistory, newHistoryElt])
+		const newHistoryElt: ChatMessage = { role: 'user', content, displayContent: instructions, selection, files }
+		setChatHistory(chatMessageHistory => [...chatMessageHistory, newHistoryElt])
 
 		// send message to claude
 		let { abort } = sendLLMMessage({
-			messages: [...chatHistory.map(m => ({ role: m.role, content: m.content })), { role: 'user', content }],
+			messages: [...chatMessageHistory.map(m => ({ role: m.role, content: m.content })), { role: 'user', content }],
 			onText: (newText, fullText) => setMessageStream(fullText),
 			onFinalMessage: (content) => {
 
 				// add assistant's message to chat history
 				const newHistoryElt: ChatMessage = { role: 'assistant', content, displayContent: content, }
-				setChatHistory(chatHistory => [...chatHistory, newHistoryElt])
+				setChatHistory(chatMessageHistory => [...chatMessageHistory, newHistoryElt])
 
 				// clear selection
 				setMessageStream('')
@@ -185,7 +233,7 @@ const Sidebar = () => {
 		// if messageStream was not empty, add it to the history
 		const llmContent = messageStream || '(canceled)'
 		const newHistoryElt: ChatMessage = { role: 'assistant', displayContent: messageStream, content: llmContent }
-		setChatHistory(chatHistory => [...chatHistory, newHistoryElt])
+		setChatHistory(chatMessageHistory => [...chatMessageHistory, newHistoryElt])
 
 		setMessageStream('')
 		setIsLoading(false)
@@ -196,40 +244,22 @@ const Sidebar = () => {
 		<div className="flex flex-col h-full w-full">
 			<div className="flex-grow overflow-y-auto overflow-x-hidden p-4">
 				{/* previous messages */}
-				{chatHistory.map((message, i) => (
-					<ChatBubble key={i} role={message.role}>
-						{message.displayContent}
-					</ChatBubble>
-				))}
+				{chatMessageHistory.map((message, i) =>
+					<ChatBubble key={i} chatMessage={message} />
+				)}
 				{/* message stream */}
-				<ChatBubble role={'assistant'}>
-					{messageStream}
-				</ChatBubble>
+				<ChatBubble chatMessage={{ role: 'assistant', content: messageStream, displayContent: messageStream }} />
 			</div>
 			{/* chatbar */}
 			<div className="p-4 border-t">
 				{/* selection */}
 				<div className="text-left">
 					{/* selected files */}
-					{files.length !== 0 && <div className='text-xs my-2'>
-						Include files:
-						{files.map((filename, i) =>
-							<div key={i} className='flex'>
-								{/* X button on a file */}
-								<button type='button' onClick={() => {
-									let file_index = files.indexOf(filename)
-									setFiles([...files.slice(0, file_index), ...files.slice(file_index + 1, Infinity)])
-								}}>
-									-{' '}<span className='text-gray-500'>{getBasename(filename.fsPath)}</span>
-								</button>
-							</div>
-						)}
-					</div>}
+					<FilesSelector files={files} setFiles={setFiles} />
 					{/* selected code */}
 					{!selection?.selectionStr ? null
-						: <div className="inline-block p-2 rounded-lg bg-gray-200 text-black">
-							{selection.selectionStr}
-						</div>}
+						: <BlockCode text={selection?.selectionStr} disableApplyButton={true} />
+					}
 				</div>
 				<form
 					ref={formRef}

@@ -14251,12 +14251,6 @@ declare module 'vscode' {
 		export function registerCodeLensProvider(selector: DocumentSelector, provider: CodeLensProvider): Disposable;
 
 
-
-		// GLASS ADDED THIS
-		// eslint-disable-next-line jsdoc/require-jsdoc
-		export function registerGlassCtrlKProvider(selector: DocumentSelector, provider: CodeLensProvider): Disposable;
-
-
 		/**
 		 * Register a definition provider.
 		 *
