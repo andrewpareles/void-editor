@@ -1,99 +1,132 @@
-# Contributing to VS Code
 
-Welcome, and thank you for your interest in contributing to VS Code!
+# Welcome!
 
-There are several ways in which you can contribute, beyond writing code. The goal of this document is to provide a high-level overview of how you can get involved.
+Welcome! Here is a guide on how to setup and contribute to void :). We want to make it as easy to contribute as possible, so if you have any questions or comments at all, please reach out to us via email or discord!
 
-## Asking Questions
+Void is a fork of the of [vscode](https://github.com/microsoft/vscode) repository. Right now, we use a VS Code extension to create most of void's functionality, but we also edit parts of the IDE to do things that an extension alone cannot do. Most changes should be made to the extension, although there are some changes that require modifying the entire IDE.
+
+## Getting started
+
+Here's how you can start contributing to our extension. This will work most of the time, but if you want to make a change to the entire IDE beyond the extension please see VS Code's [how to contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) page, which goes over how to install dependencies and run the IDE. This is easier than it looks and you can often skip right to the [build and run](https://github.com/microsoft/vscode/wiki/How-to-Contribute#build-and-run) section.
+
+1. Clone our repository from GitHub
+
+`git clone https://github.com/andrewpareles/void-editor`
+
+2. Open the extension folder
+
+`cd /extensions/void`
+
+3. Install dependencies
+
+`npm run install`
+
+4. Build the project. We're using React to build the sidebar `sidebar/index.tsx` and other parts of the extension. This command compiles all of the react components into raw javascript and css in the `dist/...` folder, allowing us to use them in vscode.
+
+`npm run build`
+
+5. Run the project by pressing `f5`.
+
+This will start a new instance of VS Code with the extension enabled. If this does not work, you can press `f1 > type "Debug: Start Debugging" > press Enter > type "VS Code Extension Development"`.
+
+If you would like to use AI features, you need to insert an API key. You can do that by going to `settings (ctrl + ,) > void > "Anthropic Api Key"`. The provider is chosen based on the "Which API" environment variable, and defaults to "anthropic".
+
+## Submitting a pull request
+
+When you've made changes and want to submit them, please submit a pull request. Here's how you submit a pull request:
+
+[[TODO!!!]]
 
 
-Have a question? Instead of opening an issue, please ask on [Stack Overflow](https://stackoverflow.com/questions/tagged/visual-studio-code) using the tag `visual-studio-code`.
 
-The active community will be eager to assist you. Your well-worded question will serve as a resource to others searching for help.
 
-## Providing Feedback
+## What to work on
 
-Your comments and feedback are welcome, and the development team is available via a handful of different channels.
+Here are the most important topics we think you can contribute, but feel free to contribute anything you like. For a complete list, see [here]([[TODO!!!]])
 
-See the [Feedback Channels](https://github.com/microsoft/vscode/wiki/Feedback-Channels) wiki page for details on how to share your thoughts.
+More ⭐'s = more important.
 
-## Reporting Issues
 
-Have you identified a reproducible problem in VS Code? Do you have a feature request? We want to hear about it! Here's how you can report your issue as effectively as possible.
 
-### Identify Where to Report
+⭐⭐⭐ Add void changes to the history. When the user submits a response, or presses the apply/accept/reject buttons, we should add these events to the history and allow the user to use undo/redo on them. Right now there is unexpected behavior if the user tries to undo or redo their changes related to void.
 
-The VS Code project is distributed across multiple repositories. Try to file the issue against the correct repository. Check the list of [Related Projects](https://github.com/microsoft/vscode/wiki/Related-Projects) if you aren't sure which repo is correct.
+⭐⭐⭐ Improve diffs. We define a "diff" as a single group of green/red code that denotes a change. Here are improvements to make:
 
-Can you recreate the issue even after [disabling all extensions](https://code.visualstudio.com/docs/editor/extension-gallery#_disable-an-extension)? If you find the issue is caused by an extension you have installed, please file an issue on the extension's repo directly.
+1. Show deletion (-) diffs. Right now we're only showing insertion (+) diffs. We do this by highlighting all of the new code in green using a simple text decoration. We would like to instead use code from VS Code's native diffEditor to show the diffs ("inline" mode). We could also keep what we have and add red boxes of the deletions inline with the code.
 
-### Look For an Existing Issue
+2. Make diffs responsive to edits. When a user accepts a diff, all of the diffs below it should be updated (because they are now on different line numbers). We're not doing this, so there is a lot of unexpected behavior. We should the Diffs' ranges every time there's a change.
 
-Before you create a new issue, please do a search in [open issues](https://github.com/microsoft/vscode/issues) to see if the issue or feature request has already been filed.
+3. Implement "Diff Selections". When the user makes a change (either in ctrl+k or ctrl+L) we should save the selection that was changed. All changes made inside of this selection should appear as a diff. The selection should disappear when all of the diffs inside of it have either been accepted or rejected.
 
-Be sure to scan through the [most popular](https://github.com/microsoft/vscode/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc) feature requests.
+⭐⭐⭐ Build Cursor-style quick edits (ctrl+k). When the user presses ctrl+k, an input box should appear inline with the code that they were selecting. This is somewhat difficult to do because an extension alone cannot do this, and it requires creating a new component in the IDE. We think you can modify vscode's built-in "codelens" or "zone widget" components, but we are open to alternatives.
 
-If you find your issue already exists, make relevant comments and add your [reaction](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments). Use a reaction in place of a "+1" comment:
+⭐⭐⭐ Improve ctrl+L. One improvement is to make the model output diffs, instead of outputting the entire file. When the user clicks "apply" on a diff, the model should go through the entire file and apply the diff in the correct location.
 
-* 👍 - upvote
-* 👎 - downvote
 
-If you cannot find an existing issue that describes your bug or feature, create a new issue using the guidelines below.
+⭐⭐ Integrate with Ollama. We have an Ollama integration coded up in the extension, but it breaks. This is because Ollama has Node.js dependencies like 'path' and 'os' which cannot run in extensions (extensions have to be able to run in the browser). To fix this, we need to migrate void's extension so that it runs natively into the VS Code editor so that we can access Node.js.
 
-### Writing Good Bug Reports and Feature Requests
 
-File a single issue per problem and feature request. Do not enumerate multiple bugs or feature requests in the same issue.
+⭐ Let the user accept / reject all Diffs in an entire file.
+⭐ Allow the user to make multiple selections of code/files at once.
 
-Do not add your issue as a comment to an existing issue unless it's for the identical input. Many issues look similar but have different causes.
+## Links
 
-The more information you can provide, the more likely someone will be successful at reproducing the issue and finding a fix.
+[[TODO!!!]]
 
-The built-in tool for reporting an issue, which you can access by using `Report Issue` in VS Code's Help menu, can help streamline this process by automatically providing the version of VS Code, all your installed extensions, and your system info. Additionally, the tool will search among existing issues to see if a similar issue already exists.
 
-Please include the following with each issue:
+- TODO list
 
-* Version of VS Code
-* Your operating system
-* List of extensions that you have installed
-* Reproducible steps (1... 2... 3...) that cause the issue
-* What you expected to see, versus what you actually saw
-* Images, animations, or a link to a video showing the issue occurring
-* A code snippet that demonstrates the issue or a link to a code repository the developers can easily pull down to recreate the issue locally
-  * **Note:** Because the developers need to copy and paste the code snippet, including a code snippet as a media file (i.e. .gif) is not sufficient.
-* Errors from the Dev Tools Console (open from the menu: Help > Toggle Developer Tools)
 
-### Creating Pull Requests
+<!--
 
-* Please refer to the article on [creating pull requests](https://github.com/microsoft/vscode/wiki/How-to-Contribute#pull-requests) and contributing to this project.
+### Design principles
 
-### Final Checklist
+- Least amount of eye movement necessary; if user presses submit, show them the message where they submitted
 
-Please remember to do the following:
 
-* [ ] Search the issue repository to ensure your report is a new issue
-* [ ] Recreate the issue after disabling all extensions
-* [ ] Simplify your code around the issue to better isolate the problem
+### Ctrl+L (chat)
 
-Don't feel bad if the developers can't reproduce the issue right away. They will simply ask for more information!
 
-### Follow Your Issue
 
-Once submitted, your report will go into the [issue tracking](https://github.com/microsoft/vscode/wiki/Issue-Tracking) workflow. Be sure to understand what will happen next, so you know what to expect and how to continue to assist throughout the process.
 
-## Automated Issue Management
+### Ctrl+K (inline edits)
 
-We use GitHub Actions to help us manage issues. These Actions and their descriptions can be [viewed here](https://github.com/microsoft/vscode-github-triage-actions). Some examples of what these Actions do are:
+- Create a new input box that takes in the user's description.
 
-* Automatically close any issue marked `info-needed` if there has been no response in the past 7 days.
-* Automatically lock issues 45 days after they are closed.
-* Automatically implement the VS Code [feature request pipeline](https://github.com/microsoft/vscode/wiki/Issues-Triaging#managing-feature-requests).
+- Make it appear above each.
 
-If you believe the bot got something wrong, please open a new issue and let us know.
+- The input box should appear directly above the code selection - this requires using a Zone widget.
 
-## Contributing Fixes
 
-If you are interested in writing code to fix issues, please see [How to Contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) in the wiki.
+### Core
 
-## Thank You
+- Migrate the void extension to live natively in VS Code. There's initial work here at `glass.contribution.ts`.
 
-Your contributions to open source, large or small, make great projects like this possible. Thank you for taking the time to contribute.
+- Allow access to the VS Code extension marketplace.
+
+- Re-write the whole file when the user clicks "Apply" and show a gray progress indicator in the BG.
+
+
+
+### Diffs
+
+"Diffs" are the inline green/red highlights you see to approve or reject a change.
+
+- Diffs are not responsive to edits right now. To make them responsive, we need to update all Diffs' ranges every time there's a change.
+
+- Right now Diffs are only shown in green as a simple text decoration. We'd like to have them work better by using code from VS Code's native diffEditor ("inline" mode).
+
+- **Events:** On many types of events, we should reject all the current Diffs (user submits a new chat message, clicks Apply, etc).
+
+
+
+
+
+
+### Ollama
+
+- Ollama doesn't work now because its JS library depends on Node.js and uses imports like 'path', 'os', while extensions must be able to run in the browser. When we migrate the extension into the VS Code codebase, we'll be able to access Node.js and will uncomment the Ollama integration.
+
+### Greptile
+
+- Ideally we'd auto-detect -->
