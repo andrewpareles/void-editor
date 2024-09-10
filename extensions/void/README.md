@@ -50,7 +50,7 @@ More ⭐'s = more important.
 
 ⭐⭐⭐ Add void changes to the history. When the user submits a response, or presses the apply/accept/reject buttons, we should add these events to the history and allow the user to use undo/redo on them. Right now there is unexpected behavior if the user tries to undo or redo their changes related to void.
 
-⭐⭐⭐ Improve diffs. We define a "diff" as one group of green/red code that denotes a change. Here are improvements to make:
+⭐⭐⭐ Improve diffs. We define a "diff" as a single group of green/red code that denotes a change. Here are improvements to make:
 
 1. Show deletion (-) diffs. Right now we're only showing insertion (+) diffs. We do this by highlighting all of the new code in green using a simple text decoration. We would like to instead use code from VS Code's native diffEditor to show the diffs ("inline" mode). We could also keep what we have and add red boxes of the deletions inline with the code.
 
