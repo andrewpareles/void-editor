@@ -1,7 +1,7 @@
 
 # Welcome!
 
-Welcome! Here is a guide on how to setup and contribute to void :). We want to make it as easy to contribute as possible, so if you have any questions or comments at all, please reach out to us via email or discord!
+Welcome! Here is a guide on how to contribute to void :). We want to make it as easy to contribute as possible, so if you have any questions or comments at all, please reach out to us via email or discord!
 
 Void is a fork of the of [vscode](https://github.com/microsoft/vscode) repository. Right now, we use a VS Code extension to create most of void's functionality, but we also edit parts of the IDE to do things that an extension alone cannot do. Most changes should be made to the extension, although there are some changes that require modifying the entire IDE.
 
