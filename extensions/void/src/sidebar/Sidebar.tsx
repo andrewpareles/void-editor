@@ -263,7 +263,7 @@ const Sidebar = () => {
 				</div>
 				<form
 					ref={formRef}
-					className="flex flex-row items-center rounded-md p-2 border border-gray-400 bg-[rgb(20,20,20)]"
+					className="flex flex-row items-center rounded-md p-2 border border-gray-400 bg-[rgb(30,30,30)]"
 					onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) onSubmit(e) }}
 
 					onSubmit={(e) => {
@@ -275,7 +275,7 @@ const Sidebar = () => {
 
 					<textarea
 						onChange={(e) => { setInstructions(e.target.value) }}
-						className="w-full p-2 leading-tight resize-none max-h-[50vh] overflow-hidden text-white rounded-md bg-[rgb(20,20,20)]"
+						className="w-full p-2 leading-tight resize-none max-h-[50vh] overflow-hidden text-gray-100 rounded-md bg-[rgb(30,30,30)]"
 						style={{ outline: '0px solid' }}
 						placeholder="Ctrl+L to select"
 						rows={1}
