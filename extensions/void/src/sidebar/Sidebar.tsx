@@ -276,7 +276,7 @@ const Sidebar = () => {
 					<textarea
 						onChange={(e) => { setInstructions(e.target.value) }}
 						className="appearance-none border-none rounded-l-lg w-full py-3 px-5 text-black bg-white leading-tight focus:outline-none focus:shadow-outline resize-none overflow-y-auto transition-height duration-200 max-h-[50vh]"
-						placeholder="Ctrl+L to select"
+						placeholder="Enter a message (Ctrl+L to select)"
 						rows={1}
 						onInput={e => { e.currentTarget.style.height = 'auto'; e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px'; }} // Adjust height dynamically
 					/>
