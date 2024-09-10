@@ -263,7 +263,7 @@ const Sidebar = () => {
 				</div>
 				<form
 					ref={formRef}
-					className="flex flex-row items-center bg-[#1e1e1e] rounded-md p-2 border border-gray-400"
+					className="flex flex-row items-center rounded-md p-2 border border-gray-400 bg-[rgb(20,20,20)]"
 					onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) onSubmit(e) }}
 
 					onSubmit={(e) => {
@@ -275,7 +275,7 @@ const Sidebar = () => {
 
 					<textarea
 						onChange={(e) => { setInstructions(e.target.value) }}
-						className="w-full p-2 leading-tight resize-none overflow-y-auto max-h-[50vh] bg-[#1e1e1e] text-white rounded-md"
+						className="w-full p-2 leading-tight resize-none scroll-m-1 max-h-[50vh] overflow-y-auto text-white rounded-md bg-[rgb(20,20,20)]"
 						style={{ outline: '0px solid' }}
 						placeholder="Ctrl+L to select"
 						rows={1}
@@ -285,11 +285,11 @@ const Sidebar = () => {
 					{isLoading ?
 						<button
 							onClick={onStop}
-							className="bg-gray-500 text-white p-2 rounded-r-lg max-h-10"
+							className="bg-gray-400 text-white p-2 rounded-r-lg max-h-10"
 							type='button'
 						>Stop</button>
 						: <button
-							className="cursor-pointer hover:bg-slate-600 bg-slate-500 text-white font-bold size-8 flex justify-center items-center rounded-full p-2 max-h-10"
+							className="cursor-pointer hover:bg-gray-700 bg-gray-600 text-white font-bold size-8 flex justify-center items-center rounded-full p-2 max-h-10"
 							disabled={!instructions}
 							type='submit'
 						>
