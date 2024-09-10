@@ -4,7 +4,7 @@ import Sidebar from './Sidebar'
 
 // mount the sidebar on the id="root" element
 if (typeof document === 'undefined') {
-    console.log('index.tsx error: document was undefined')
+	console.log('index.tsx error: document was undefined')
 }
 
 const rootElement = document.getElementById('root')!

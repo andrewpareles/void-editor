@@ -4,25 +4,25 @@ import OpenAI from 'openai';
 // import ollama from 'ollama'
 
 export type ApiConfig = {
-    anthropic: {
-        apikey: string,
-    },
-    openai: {
-        apikey: string
-    },
-    greptile: {
-        apikey: string,
-        githubPAT: string,
-        repoinfo: {
-            remote: string, // e.g. 'github'
-            repository: string, // e.g. 'andrewpareles/glass_vscode'
-            branch: string // e.g. 'main'
-        }
-    },
-    ollama: {
-        // TODO
-    },
-    whichApi: string
+	anthropic: {
+		apikey: string,
+	},
+	openai: {
+		apikey: string
+	},
+	greptile: {
+		apikey: string,
+		githubPAT: string,
+		repoinfo: {
+			remote: string, // e.g. 'github'
+			repository: string, // e.g. 'andrewpareles/glass_vscode'
+			branch: string // e.g. 'main'
+		}
+	},
+	ollama: {
+		// TODO
+	},
+	whichApi: string
 }
 
 
@@ -30,29 +30,29 @@ export type ApiConfig = {
 type OnText = (newText: string, fullText: string) => void
 
 export type LLMMessage = {
-    role: 'user' | 'assistant',
-    content: string
+	role: 'user' | 'assistant',
+	content: string
 }
 
 type SendLLMMessageFnTypeInternal = (params: {
-    messages: LLMMessage[],
-    onText: OnText,
-    onFinalMessage: (input: string) => void,
-    apiConfig: ApiConfig,
+	messages: LLMMessage[],
+	onText: OnText,
+	onFinalMessage: (input: string) => void,
+	apiConfig: ApiConfig,
 })
-    => {
-        abort: () => void
-    }
+	=> {
+		abort: () => void
+	}
 
 type SendLLMMessageFnTypeExternal = (params: {
-    messages: LLMMessage[],
-    onText: OnText,
-    onFinalMessage: (input: string) => void,
-    apiConfig: ApiConfig | null,
+	messages: LLMMessage[],
+	onText: OnText,
+	onFinalMessage: (input: string) => void,
+	apiConfig: ApiConfig | null,
 })
-    => {
-        abort: () => void
-    }
+	=> {
+		abort: () => void
+	}
 
 
 
@@ -61,38 +61,38 @@ type SendLLMMessageFnTypeExternal = (params: {
 const sendClaudeMsg: SendLLMMessageFnTypeInternal = ({ messages, onText, onFinalMessage, apiConfig }) => {
 
 
-    const anthropic = new Anthropic({ apiKey: apiConfig.anthropic.apikey, dangerouslyAllowBrowser: true }); // defaults to process.env["ANTHROPIC_API_KEY"]
+	const anthropic = new Anthropic({ apiKey: apiConfig.anthropic.apikey, dangerouslyAllowBrowser: true }); // defaults to process.env["ANTHROPIC_API_KEY"]
 
-    const stream = anthropic.messages.stream({
-        model: "claude-3-5-sonnet-20240620",
-        max_tokens: 1024,
-        messages: messages,
-    });
+	const stream = anthropic.messages.stream({
+		model: "claude-3-5-sonnet-20240620",
+		max_tokens: 1024,
+		messages: messages,
+	});
 
-    let did_abort = false
+	let did_abort = false
 
-    // when receive text
-    stream.on('text', (newText, fullText) => {
-        if (did_abort) return
-        onText(newText, fullText)
-    })
+	// when receive text
+	stream.on('text', (newText, fullText) => {
+		if (did_abort) return
+		onText(newText, fullText)
+	})
 
-    // when we get the final message on this stream (or when error/fail)
-    stream.on('finalMessage', (claude_response) => {
-        if (did_abort) return
-        // stringify the response's content
-        let content = claude_response.content.map(c => { if (c.type === 'text') { return c.text } }).join('\n');
-        onFinalMessage(content)
-    })
+	// when we get the final message on this stream (or when error/fail)
+	stream.on('finalMessage', (claude_response) => {
+		if (did_abort) return
+		// stringify the response's content
+		let content = claude_response.content.map(c => { if (c.type === 'text') { return c.text } }).join('\n');
+		onFinalMessage(content)
+	})
 
 
-    // if abort is called, onFinalMessage is NOT called, and no later onTexts are called either
-    const abort = () => {
-        // stream.abort() // this doesnt appear to do anything, but it should try to stop claude from generating anymore
-        did_abort = true
-    }
+	// if abort is called, onFinalMessage is NOT called, and no later onTexts are called either
+	const abort = () => {
+		// stream.abort() // this doesnt appear to do anything, but it should try to stop claude from generating anymore
+		did_abort = true
+	}
 
-    return { abort }
+	return { abort }
 
 };
 
@@ -102,43 +102,43 @@ const sendClaudeMsg: SendLLMMessageFnTypeInternal = ({ messages, onText, onFinal
 // OpenAI
 const sendOpenAIMsg: SendLLMMessageFnTypeInternal = ({ messages, onText, onFinalMessage, apiConfig }) => {
 
-    let did_abort = false
-    let fullText = ''
+	let did_abort = false
+	let fullText = ''
 
-    // if abort is called, onFinalMessage is NOT called, and no later onTexts are called either
-    let abort: () => void = () => { did_abort = true }
+	// if abort is called, onFinalMessage is NOT called, and no later onTexts are called either
+	let abort: () => void = () => { did_abort = true }
 
-    const openai = new OpenAI({ apiKey: apiConfig.openai.apikey, dangerouslyAllowBrowser: true });
+	const openai = new OpenAI({ apiKey: apiConfig.openai.apikey, dangerouslyAllowBrowser: true });
 
-    openai.chat.completions.create({
-        model: 'gpt-4o-2024-08-06',
-        messages: messages,
-        stream: true,
-    })
-        .then(async response => {
-            abort = () => {
-                // response.controller.abort() // this isn't needed now, to keep consistency with claude will leave it commented
-                did_abort = true;
-            }
-            // when receive text
-            try {
-                for await (const chunk of response) {
-                    if (did_abort) return;
-                    const newText = chunk.choices[0]?.delta?.content || '';
-                    fullText += newText;
-                    onText(newText, fullText);
-                }
-                onFinalMessage(fullText);
-            }
-            // when error/fail
-            catch (error) {
-                console.error('Error in OpenAI stream:', error);
-                onFinalMessage(fullText);
-            }
-            // when we get the final message on this stream
-            onFinalMessage(fullText)
-        })
-    return { abort };
+	openai.chat.completions.create({
+		model: 'gpt-4o-2024-08-06',
+		messages: messages,
+		stream: true,
+	})
+		.then(async response => {
+			abort = () => {
+				// response.controller.abort() // this isn't needed now, to keep consistency with claude will leave it commented
+				did_abort = true;
+			}
+			// when receive text
+			try {
+				for await (const chunk of response) {
+					if (did_abort) return;
+					const newText = chunk.choices[0]?.delta?.content || '';
+					fullText += newText;
+					onText(newText, fullText);
+				}
+				onFinalMessage(fullText);
+			}
+			// when error/fail
+			catch (error) {
+				console.error('Error in OpenAI stream:', error);
+				onFinalMessage(fullText);
+			}
+			// when we get the final message on this stream
+			onFinalMessage(fullText)
+		})
+	return { abort };
 };
 
 
@@ -149,68 +149,68 @@ const sendOpenAIMsg: SendLLMMessageFnTypeInternal = ({ messages, onText, onFinal
 
 const sendGreptileMsg: SendLLMMessageFnTypeInternal = ({ messages, onText, onFinalMessage, apiConfig }) => {
 
-    let did_abort = false
-    let fullText = ''
+	let did_abort = false
+	let fullText = ''
 
-    // if abort is called, onFinalMessage is NOT called, and no later onTexts are called either
-    let abort: () => void = () => { did_abort = true }
+	// if abort is called, onFinalMessage is NOT called, and no later onTexts are called either
+	let abort: () => void = () => { did_abort = true }
 
 
-    fetch('https://api.greptile.com/v2/query', {
-        method: 'POST',
-        headers: {
-            "Authorization": `Bearer ${apiConfig.greptile.apikey}`,
-            "X-Github-Token": `${apiConfig.greptile.githubPAT}`,
-            "Content-Type": `application/json`,
-        },
-        body: JSON.stringify({
-            messages,
-            stream: true,
-            repositories: [apiConfig.greptile.repoinfo]
-        }),
-    })
-        // this is {message}\n{message}\n{message}...\n
-        .then(async response => {
-            const text = await response.text()
-            console.log('got greptile', text)
-            return JSON.parse(`[${text.trim().split('\n').join(',')}]`)
-        })
-        // TODO make this actually stream, right now it just sends one message at the end
-        .then(async responseArr => {
-            if (did_abort)
-                return
+	fetch('https://api.greptile.com/v2/query', {
+		method: 'POST',
+		headers: {
+			"Authorization": `Bearer ${apiConfig.greptile.apikey}`,
+			"X-Github-Token": `${apiConfig.greptile.githubPAT}`,
+			"Content-Type": `application/json`,
+		},
+		body: JSON.stringify({
+			messages,
+			stream: true,
+			repositories: [apiConfig.greptile.repoinfo]
+		}),
+	})
+		// this is {message}\n{message}\n{message}...\n
+		.then(async response => {
+			const text = await response.text()
+			console.log('got greptile', text)
+			return JSON.parse(`[${text.trim().split('\n').join(',')}]`)
+		})
+		// TODO make this actually stream, right now it just sends one message at the end
+		.then(async responseArr => {
+			if (did_abort)
+				return
 
-            for (let response of responseArr) {
+			for (let response of responseArr) {
 
-                const type: string = response['type']
-                const message = response['message']
+				const type: string = response['type']
+				const message = response['message']
 
-                // when receive text
-                if (type === 'message') {
-                    fullText += message
-                    onText(message, fullText)
-                }
-                else if (type === 'sources') {
-                    const { filepath, linestart, lineend } = message as { filepath: string, linestart: number | null, lineend: number | null }
-                    fullText += filepath
-                    onText(filepath, fullText)
-                }
-                // type: 'status' with an empty 'message' means last message
-                else if (type === 'status') {
-                    if (!message) {
-                        onFinalMessage(fullText)
-                    }
-                }
-            }
+				// when receive text
+				if (type === 'message') {
+					fullText += message
+					onText(message, fullText)
+				}
+				else if (type === 'sources') {
+					const { filepath, linestart, lineend } = message as { filepath: string, linestart: number | null, lineend: number | null }
+					fullText += filepath
+					onText(filepath, fullText)
+				}
+				// type: 'status' with an empty 'message' means last message
+				else if (type === 'status') {
+					if (!message) {
+						onFinalMessage(fullText)
+					}
+				}
+			}
 
-        })
-        .catch(e => {
-            console.error('Error in Greptile stream:', e);
-            onFinalMessage(fullText);
+		})
+		.catch(e => {
+			console.error('Error in Greptile stream:', e);
+			onFinalMessage(fullText);
 
-        });
+		});
 
-    return { abort }
+	return { abort }
 
 
 
@@ -218,26 +218,26 @@ const sendGreptileMsg: SendLLMMessageFnTypeInternal = ({ messages, onText, onFin
 
 
 export const sendLLMMessage: SendLLMMessageFnTypeExternal = ({ messages, onText, onFinalMessage, apiConfig }) => {
-    if (!apiConfig) return { abort: () => { } }
+	if (!apiConfig) return { abort: () => { } }
 
-    const whichApi = apiConfig.whichApi
+	const whichApi = apiConfig.whichApi
 
-    if (whichApi === 'anthropic') {
-        return sendClaudeMsg({ messages, onText, onFinalMessage, apiConfig })
-    }
-    else if (whichApi === 'openai') {
-        return sendOpenAIMsg({ messages, onText, onFinalMessage, apiConfig })
-    }
-    else if (whichApi === 'greptile') {
-        return sendGreptileMsg({ messages, onText, onFinalMessage, apiConfig })
-    }
-    else if (whichApi === 'ollama') {
-        return sendClaudeMsg({ messages, onText, onFinalMessage, apiConfig }) // TODO
-    }
-    else {
-        console.error(`Error: whichApi was ${whichApi}, which is not recognized!`)
-        return sendClaudeMsg({ messages, onText, onFinalMessage, apiConfig }) // TODO
-    }
+	if (whichApi === 'anthropic') {
+		return sendClaudeMsg({ messages, onText, onFinalMessage, apiConfig })
+	}
+	else if (whichApi === 'openai') {
+		return sendOpenAIMsg({ messages, onText, onFinalMessage, apiConfig })
+	}
+	else if (whichApi === 'greptile') {
+		return sendGreptileMsg({ messages, onText, onFinalMessage, apiConfig })
+	}
+	else if (whichApi === 'ollama') {
+		return sendClaudeMsg({ messages, onText, onFinalMessage, apiConfig }) // TODO
+	}
+	else {
+		console.error(`Error: whichApi was ${whichApi}, which is not recognized!`)
+		return sendClaudeMsg({ messages, onText, onFinalMessage, apiConfig }) // TODO
+	}
 
 }
 

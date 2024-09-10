@@ -25,7 +25,7 @@ const getApiConfig = () => {
 			}
 		},
 		ollama: {},
-		whichApi:vscode.workspace.getConfiguration('myExtension').get('whichApi') ?? ''
+		whichApi: vscode.workspace.getConfiguration('myExtension').get('whichApi') ?? ''
 	}
 	return apiConfig
 }
@@ -77,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 
-	// 5. 
+	// 5.
 	webviewProvider.webview.then(
 		webview => {
 

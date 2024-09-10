@@ -9,31 +9,31 @@ type File = { filepath: vscode.Uri, content: string }
 
 type WebviewMessage = (
 
-    // editor -> sidebar
-    | { type: 'ctrl+l', selection: Selection } // user presses ctrl+l in the editor
+	// editor -> sidebar
+	| { type: 'ctrl+l', selection: Selection } // user presses ctrl+l in the editor
 
-    // sidebar -> editor
-    | { type: 'applyCode', code: string } // user clicks "apply" in the sidebar
+	// sidebar -> editor
+	| { type: 'applyCode', code: string } // user clicks "apply" in the sidebar
 
-    // sidebar -> editor
-    | { type: 'requestFiles', filepaths: vscode.Uri[] }
+	// sidebar -> editor
+	| { type: 'requestFiles', filepaths: vscode.Uri[] }
 
-    // editor -> sidebar
-    | { type: 'files', files: { filepath: vscode.Uri, content: string }[] }
+	// editor -> sidebar
+	| { type: 'files', files: { filepath: vscode.Uri, content: string }[] }
 
-    // sidebar -> editor
-    | { type: 'getApiConfig' }
+	// sidebar -> editor
+	| { type: 'getApiConfig' }
 
-    // editor -> sidebar
-    | { type: 'apiConfig', apiConfig: ApiConfig }
+	// editor -> sidebar
+	| { type: 'apiConfig', apiConfig: ApiConfig }
 
 )
 
 type Command = WebviewMessage['type']
 
 export {
-    Selection,
-    File,
-    WebviewMessage,
-    Command,
+	Selection,
+	File,
+	WebviewMessage,
+	Command,
 }
