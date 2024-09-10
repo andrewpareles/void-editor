@@ -251,7 +251,7 @@ const Sidebar = () => {
 				<ChatBubble chatMessage={{ role: 'assistant', content: messageStream, displayContent: messageStream }} />
 			</div>
 			{/* chatbar */}
-			<div className="p-4 border-t">
+			<div className="py-4 border-t">
 				{/* selection */}
 				<div className="text-left">
 					{/* selected files */}
