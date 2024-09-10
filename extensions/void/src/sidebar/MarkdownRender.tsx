@@ -3,19 +3,17 @@ import { MarkedToken, Token, TokensList } from 'marked';
 import { awaitVSCodeResponse, getVSCodeAPI } from './getVscodeApi';
 
 
-const Code = ({ text }: { text: string }) => {
+const BlockCode = ({ text }: { text: string }) => {
     return <div>
-        <div className='text-sm'>
-            <button className='text-sm' onClick={async () => {
-                getVSCodeAPI().postMessage({ type: 'applyCode', code: text })
-            }}
-            >
-                Apply
-            </button>
+        <div className='text-sm text-right'>
+            <button className='px-3 py-1 text-sm text-white bg-[#1e1e1e] rounded-t-sm hover:brigtness-105'
+                onClick={async () => { getVSCodeAPI().postMessage({ type: 'applyCode', code: text }) }}>Apply</button>
         </div>
-        <pre className='bg-black text-gray-50 rounded-sm overflow-hidden'>
-            {text}
-        </pre>
+        <div className='overflow-x-auto bg-black rounded-sm rounded-tr-none text-gray-50'>
+            <pre className='p-3'>
+                {text}
+            </pre>
+        </div>
     </div>
 }
 
@@ -29,7 +27,7 @@ const Render = ({ token }: { token: Token }) => {
     }
 
     if (t.type === "code") {
-        return <Code text={t.text} />
+        return <BlockCode text={t.text} />
     }
 
     if (t.type === "heading") {
@@ -92,7 +90,11 @@ const Render = ({ token }: { token: Token }) => {
     }
 
     if (t.type === "paragraph") {
-        return <p>{t.text}</p>;
+        return <p>
+            {t.tokens.map((token, index) => (
+                <Render key={index} token={token} />
+            ))}
+        </p>;
     }
 
     if (t.type === "html") {
@@ -123,8 +125,9 @@ const Render = ({ token }: { token: Token }) => {
         return <em>{t.text}</em>;
     }
 
+	// inline code
     if (t.type === "codespan") {
-        return <code>{t.text}</code>;
+        return <code className='text-black bg-gray-300 px-1 rounded-sm font-mono'>{t.text}</code>;
     }
 
     if (t.type === "br") {

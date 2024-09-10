@@ -51,7 +51,7 @@ const ChatBubble = ({ role, children }: { role: 'user' | 'assistant', children: 
 	}
 
 	return <div className={`mb-4 ${role === 'user' ? 'text-right' : 'text-left'}`}>
-		<div className={`inline-block p-2 rounded-lg ${role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+		<div className={`inline-block p-2 rounded-lg ${role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'} max-w-full`}>
 			{chatbubbleContents}
 		</div>
 	</div>
@@ -193,8 +193,8 @@ const Sidebar = () => {
 	}, [messageStream])
 
 	return <>
-		<div className="flex flex-col h-full">
-			<div className="flex-grow overflow-y-auto p-4">
+		<div className="flex flex-col h-full w-full">
+			<div className="flex-grow overflow-y-auto overflow-x-hidden p-4">
 				{/* previous messages */}
 				{chatHistory.map((message, i) => (
 					<ChatBubble key={i} role={message.role}>

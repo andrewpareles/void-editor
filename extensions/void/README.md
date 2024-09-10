@@ -1,12 +1,15 @@
 
-# TODOs
+# Welcome!
+
+Welcome! This file is where we track our TODOs. Feel free to add to the list or help us knock out some bullet points. Cheers!
 
 ## Core
-- We need to migrate the void extension to be a native VS Code extension. There's initial work here at `glass.contribution.ts`.
 
-- We need to allow access to the VS Code extension marketplace.
+- Migrate the void extension to be a native VS Code extension. There's initial work here at `glass.contribution.ts`.
 
-- We need to re-write the whole file when the user clicks "Apply" and show a gray progress indicator in the BG.
+- Allow access to the VS Code extension marketplace.
+
+- Re-write the whole file when the user clicks "Apply" and show a gray progress indicator in the BG.
 
 
 
