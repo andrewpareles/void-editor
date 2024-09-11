@@ -1,9 +1,11 @@
 
-# Welcome!
+# Contributing to LineMage
 
-Welcome! Here is a guide on how to contribute to void :). We want to make it as easy to contribute as possible, so if you have any questions or comments please reach out via email or discord!
+This is a guide on how to contribute to LineMage. We want to make it as easy to contribute as possible, so if you have any questions or comments please reach out via email or discord!
 
-Void is a fork of the of [vscode](https://github.com/microsoft/vscode) repository. Right now, we use a [VS Code extension](https://code.visualstudio.com/api/get-started/your-first-extension) to create most of void's functionality, but we also edit parts of the IDE in cases where we need more functionality. See below for instructions on how to contribute to the extension. If you want to make a change to the entire IDE please see VS Code's [how to contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) page, which goes over how to install dependencies and run the VS Code IDE, which works the same way as our IDE (you can often skip to the "How to Contribute" section).
+LineMage is a fork of the of [vscode](https://github.com/microsoft/vscode) repository. Right now, we use a [VS Code extension](https://code.visualstudio.com/api/get-started/your-first-extension) to create most of LineMage's functionality, but we also edit parts of the IDE in cases where we need more functionality. See below for instructions on how to contribute to the extension. If you want to make a change to the entire IDE please see VS Code's [how to contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) page, which goes over how to install dependencies and run the VS Code IDE, which works the same way as our IDE (you can often skip to the "How to Contribute" section).
+
+# Ways to Contribute
 
 ## Getting started
 
@@ -35,7 +37,9 @@ If you would like to use AI features, you need to insert an API key. You can do 
 
 ## Submitting a pull request
 
-When you've made changes and want to submit them, please submit a pull request. Here's how you submit a pull request:
+When you've made changes and want to submit them, please submit a pull request.
+
+
 
 [[TODO!!!]]
 
@@ -53,7 +57,7 @@ Full list [here]([[TODO!!!]])
 
 More ⭐'s = more important.
 
-⭐⭐⭐ Add void changes to the history. When the user submits a response, or presses the apply/accept/reject buttons, we should add these events to the history and allow the user to use undo/redo on them. Right now there is unexpected behavior if the user tries to undo or redo their changes related to void.
+⭐⭐⭐ Add LineMage changes to the history. When the user submits a response, or presses the apply/accept/reject buttons, we should add these events to the history and allow the user to use undo/redo on them. Right now there is unexpected behavior if the user tries to undo or redo their changes related to LineMage.
 
 ⭐⭐⭐ Improve diffs. We define a "diff" as a single green/red codeblock that denotes a change. Here are improvements to make:
 
@@ -68,7 +72,7 @@ More ⭐'s = more important.
 ⭐⭐⭐ Improve ctrl+L. One improvement is to make the model output diffs, instead of outputting the entire file. When the user clicks "apply" on a diff, the model should go through the entire file and apply the diff in the correct location.
 
 
-⭐⭐ Integrate with Ollama. We have an Ollama integration coded up in the extension, but it breaks. This is because Ollama has Node.js dependencies like 'path' and 'os' which cannot run in extensions (extensions have to be able to run in the browser). To fix this, we need to migrate void's extension so that it runs natively into the VS Code editor so that we can access Node.js.
+⭐⭐ Integrate with Ollama. We have an Ollama integration coded up in the extension, but it breaks. This is because Ollama has Node.js dependencies like 'path' and 'os' which cannot run in extensions (extensions have to be able to run in the browser). To fix this, we need to migrate LineMage's extension so that it runs natively into the VS Code editor so that we can access Node.js.
 
 ⭐ When user presses ctrl+l it should reset from last time.
 
@@ -112,7 +116,7 @@ More ⭐'s = more important.
 
 ### Core
 
-- Migrate the void extension to live natively in VS Code. There's initial work here at `glass.contribution.ts`.
+- Migrate the LineMage extension to live natively in VS Code. There's initial work here at `glass.contribution.ts`.
 
 - Allow access to the VS Code extension marketplace.
 
