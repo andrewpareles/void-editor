@@ -1,11 +1,9 @@
 
 # Welcome!
 
-Welcome! Here is a guide on how to contribute to void :). We want to make it as easy to contribute as possible, so if you have any questions or comments at all, please reach out to us via email or discord!
+Welcome! Here is a guide on how to contribute to void :). We want to make it as easy to contribute as possible, so if you have any questions or comments please reach out via email or discord!
 
-Void is a fork of the of [vscode](https://github.com/microsoft/vscode) repository. Right now, we use a VS Code extension to create most of void's functionality, but we also edit parts of the IDE to do things that an extension alone cannot do. Most changes should be made to the extension, although there are some changes that require modifying the entire IDE.
-
-If you want to make a change to the entire IDE beyond the extension please see VS Code's [how to contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) page, which goes over how to install dependencies and run the IDE. This is easier than it looks and you can often skip right to the [build and run](https://github.com/microsoft/vscode/wiki/How-to-Contribute#build-and-run) section.
+Void is a fork of the of [vscode](https://github.com/microsoft/vscode) repository. Right now, we use a VS Code extension to create most of void's functionality, but we also edit parts of the IDE in cases where we need more functionality. See below for instructions on how to contribute to the extension. If you want to make a change to the entire IDE please see VS Code's [how to contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) page, which goes over how to install dependencies and run the VS Code IDE, which works the same way as our IDE (you can often skip to the "How to Contribute" section).
 
 ## Getting started
 
