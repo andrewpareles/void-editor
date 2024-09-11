@@ -23,7 +23,7 @@ Here's how you can start contributing to our extension.
 
 `npm run install`
 
-4. Build the project. We're using React to build the sidebar `sidebar/index.tsx` and other parts of the extension. This command compiles all of the react components into raw javascript and css in the `dist/...` folder, allowing us to use them in vscode.
+4. Build the project. We're using React to build the sidebar `sidebar/index.tsx` and other parts of the extension. We use this command to compile all of the react components into raw javascript and css in the `dist/...` folder so that we can use them in vscode.
 
 `npm run build`
 
