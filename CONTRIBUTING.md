@@ -7,7 +7,7 @@ Void is a fork of the of [vscode](https://github.com/microsoft/vscode) repositor
 
 ## Getting started
 
-Here's how you can start contributing to our extension. This will work most of the time, but if you want to make a change to the entire IDE beyond the extension please see VS Code's [how to contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) page, which goes over how to install dependencies and run the IDE. This is easier than it looks and you can often skip right to the [build and run](https://github.com/microsoft/vscode/wiki/How-to-Contribute#build-and-run) section.
+Here's how you can start contributing to our extension. If you want to make a change to the entire IDE beyond the extension please see VS Code's [how to contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) page, which goes over how to install dependencies and run the IDE. This is easier than it looks and you can often skip right to the [build and run](https://github.com/microsoft/vscode/wiki/How-to-Contribute#build-and-run) section.
 
 1. Clone our repository from GitHub
 
