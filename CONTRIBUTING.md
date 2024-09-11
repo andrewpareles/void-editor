@@ -11,7 +11,7 @@ If you want to make a change to the entire IDE beyond the extension please see V
 
 Here's how you can start contributing to our extension.
 
-1. Clone our repository from GitHub
+1. Clone the repository
 
 `git clone https://github.com/andrewpareles/void-editor`
 
