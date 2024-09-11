@@ -7,7 +7,7 @@ Void is a fork of the of [vscode](https://github.com/microsoft/vscode) repositor
 
 ## Getting started
 
-Here's how you can start contributing to our extension.
+Here's how you can start contributing to the extension:
 
 1. Clone the repository
 
