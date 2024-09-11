@@ -44,11 +44,14 @@ When you've made changes and want to submit them, please submit a pull request. 
 
 ## What to work on
 
-Here are the most important topics we think you can contribute, but feel free to contribute anything you like. For a complete list, see [here]([[TODO!!!]])
+
+Here are the most important topics we think you can contribute. 
+
+Feel free to contribute anything you like. 
+
+Full list [here]([[TODO!!!]])
 
 More ⭐'s = more important.
-
-
 
 ⭐⭐⭐ Add void changes to the history. When the user submits a response, or presses the apply/accept/reject buttons, we should add these events to the history and allow the user to use undo/redo on them. Right now there is unexpected behavior if the user tries to undo or redo their changes related to void.
 
