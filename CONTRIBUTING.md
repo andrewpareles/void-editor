@@ -55,13 +55,13 @@ More ⭐'s = more important.
 
 ⭐⭐⭐ Add void changes to the history. When the user submits a response, or presses the apply/accept/reject buttons, we should add these events to the history and allow the user to use undo/redo on them. Right now there is unexpected behavior if the user tries to undo or redo their changes related to void.
 
-⭐⭐⭐ Improve diffs. We define a "diff" as a single group of green/red code that denotes a change. Here are improvements to make:
+⭐⭐⭐ Improve diffs. We define a "diff" as a single green/red codeblock that denotes a change. Here are improvements to make:
 
 1. Show deletion (-) diffs. Right now we're only showing insertion (+) diffs. We do this by highlighting all of the new code in green using a simple text decoration. We would like to instead use code from VS Code's native diffEditor to show the diffs ("inline" mode). We could also keep what we have and add red boxes of the deletions inline with the code.
 
 2. Make diffs responsive to edits. When a user accepts a diff, all of the diffs below it should be updated (because they are now on different line numbers). We're not doing this, so there is a lot of unexpected behavior. We should the Diffs' ranges every time there's a change.
 
-3. Implement "Diff Selections". When the user makes a change (either in ctrl+k or ctrl+L) we should save the selection that was changed. All changes made inside of this selection should appear as a diff. The selection should disappear when all of the diffs inside of it have either been accepted or rejected.
+3. Implement "Diff Range". When the user makes a change (either in ctrl+k or ctrl+L) we should track the range that they changed (the "Diff Range"). All changes made inside of this range should appear as a diff. The range should disappear when all of the diffs inside of it have either been accepted or rejected.
 
 ⭐⭐⭐ Build Cursor-style quick edits (ctrl+k). When the user presses ctrl+k, an input box should appear inline with the code that they were selecting. This is somewhat difficult to do because an extension alone cannot do this, and it requires creating a new component in the IDE. We think you can modify vscode's built-in "codelens" or "zone widget" components, but we are open to alternatives.
 
