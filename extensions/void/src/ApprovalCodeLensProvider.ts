@@ -113,7 +113,7 @@ export class ApprovalCodeLensProvider implements vscode.CodeLensProvider {
 		await vscode.workspace.save(docUri)
 		this._weAreEditing = false
 
-		// 2. add the Yes/No codelenses
+		// 2. add the Accept/Reject codelenses
 		for (let diff of diffs) {
 			const { range, diffid, lenses: codeLenses } = diff
 
